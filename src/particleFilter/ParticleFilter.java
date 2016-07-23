@@ -1,5 +1,8 @@
 package particleFilter;
 
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.Random;
 import java.util.stream.Stream;
 
@@ -60,7 +63,7 @@ public class ParticleFilter {
 			int index = 0;
 			double a = 0.0;
 			while (index < particles.length) {
-				a += particles[index].getLikelihood();
+				a += particles[index].getLikelihood() / sum;
 				if (a > plot)
 					break;
 				index++;
@@ -81,6 +84,17 @@ public class ParticleFilter {
 
 	public boolean isEnd() {
 		return kGeneration >= 10000;
+	}
+
+	public void writeFiles(String elem1Path, String elem2Path) throws IOException {
+		PrintWriter elem1 = new PrintWriter(new FileWriter(elem1Path, true));
+		PrintWriter elem2 = new PrintWriter(new FileWriter(elem2Path, true));
+		Vector2D vec = getgVector();
+		elem1.println(kGeneration + "," + vec.getX() + "," + xVector.getX());
+		elem2.println(kGeneration + "," + vec.getY() + "," + xVector.getY());
+
+		elem1.close();
+		elem2.close();
 	}
 
 	private final double getSystemNoise() {

@@ -20,14 +20,16 @@ public class ParticleFilter {
 	private final DynamicSystem system;
 
 	private Vector2D xVector;
+	private final Vector2D initEnsembleVec;
 
 	public ParticleFilter(int N, Vector2D vec, DynamicSystem sysmem) {
 		this.N = N;
 		kGeneration = 0;
 		particles = new Particle[N];
 		random = new Random();
-		xVector = vec;
+		xVector = new Vector2D(Math.PI / 24.0, 0);
 		this.system = sysmem;
+		initEnsembleVec = vec;
 	}
 
 	/**
@@ -36,7 +38,8 @@ public class ParticleFilter {
 	 */
 	public void init() {
 		for (int i = 0; i < N; i++) {
-			Vector2D vector = new Vector2D(xVector.getX() + getSystemNoise(), xVector.getY() + getSystemNoise());
+			Vector2D vector = new Vector2D(initEnsembleVec.getX() + getSystemNoise(),
+					initEnsembleVec.getY() + getSystemNoise());
 			Particle particle = new Particle();
 			particle.setXVector(vector);
 			particles[i] = particle;
@@ -123,7 +126,7 @@ public class ParticleFilter {
 	 * @return
 	 */
 	private final double getSystemNoise() {
-		return random.nextGaussian() * 0.2 * 0.2;
+		return random.nextGaussian() * 0.2;
 	}
 
 	/**
@@ -131,7 +134,7 @@ public class ParticleFilter {
 	 * @return
 	 */
 	private final double getObserveNoise() {
-		return random.nextGaussian() * 0.1 * 0.1;
+		return random.nextGaussian() * 0.1;
 	}
 
 }

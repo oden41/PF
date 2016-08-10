@@ -6,9 +6,10 @@ import java.io.PrintWriter;
 import java.util.Random;
 import java.util.stream.Stream;
 
+import model.DynamicSystem;
+
 import org.apache.commons.math3.geometry.euclidean.twod.Vector2D;
 
-import model.DynamicSystem;
 import particle.Particle;
 
 public class ParticleFilter {
@@ -38,8 +39,7 @@ public class ParticleFilter {
 	 */
 	public void init() {
 		for (int i = 0; i < N; i++) {
-			Vector2D vector = new Vector2D(initEnsembleVec.getX() + getSystemNoise(),
-					initEnsembleVec.getY() + getSystemNoise());
+			Vector2D vector = new Vector2D(initEnsembleVec.getX() + getSystemNoise(), initEnsembleVec.getY() + getSystemNoise());
 			Particle particle = new Particle();
 			particle.setXVector(vector);
 			particles[i] = particle;
@@ -56,7 +56,7 @@ public class ParticleFilter {
 			p.setXVector(system.stateEq(p.getXVector(), noise));
 		});
 
-		//実際の状態も更新
+		// 実際の状態も更新
 		xVector = system.stateEq(xVector, getSystemNoise());
 	}
 
@@ -65,13 +65,12 @@ public class ParticleFilter {
 	 *
 	 */
 	public void filtering() {
-		//観測値y_{k+1}
+		// 観測値y_{k+1}
 		double y = system.observeEq(xVector, getObserveNoise());
-		//尤度計算
-		Stream.of(particles).forEach(p -> p.setLikelihood((1.0 / (Math.sqrt(4 * Math.PI * Math.PI * 0.1 * 0.1))
-				* Math.exp(-(y - p.getXVector().getY()) * (y - p.getXVector().getY()) / (2 * 0.1 * 0.1)))));
+		// 尤度計算
+		Stream.of(particles).forEach(p -> p.setLikelihood((1.0 / (Math.sqrt(4 * Math.PI * Math.PI * 0.1 * 0.1)) * Math.exp(-(y - p.getXVector().getY()) * (y - p.getXVector().getY()) / (2 * 0.1 * 0.1)))));
 
-		//選択
+		// 選択
 		double sum = Stream.of(particles).mapToDouble(p -> p.getLikelihood()).sum();
 		Particle[] newGeneration = new Particle[particles.length];
 		for (int i = 0; i < particles.length; i++) {
@@ -92,6 +91,7 @@ public class ParticleFilter {
 
 	/**
 	 * アンサンブルの重心を取得する
+	 *
 	 * @return
 	 */
 	public Vector2D getgVector() {
@@ -105,6 +105,7 @@ public class ParticleFilter {
 
 	/**
 	 * 終了条件を判定する．今回は10000回固定
+	 *
 	 * @return
 	 */
 	public boolean isEnd() {
@@ -124,6 +125,7 @@ public class ParticleFilter {
 
 	/**
 	 * システムノイズ
+	 *
 	 * @return
 	 */
 	private final double getSystemNoise() {
@@ -132,6 +134,7 @@ public class ParticleFilter {
 
 	/**
 	 * 観測ノイズ
+	 *
 	 * @return
 	 */
 	private final double getObserveNoise() {

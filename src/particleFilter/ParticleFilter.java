@@ -15,7 +15,7 @@ public class ParticleFilter {
 
 	private final int N;
 	private int kGeneration;
-	private final Particle[] particles;
+	private Particle[] particles;
 	private final Random random;
 	private final DynamicSystem system;
 
@@ -87,6 +87,7 @@ public class ParticleFilter {
 			newGeneration[i] = particles[index].clone();
 		}
 		kGeneration++;
+		particles = newGeneration;
 	}
 
 	/**
